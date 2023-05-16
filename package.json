@@ -1,0 +1,31 @@
+{
+  "name": "atlantidascs-backend",
+  "version": "1.0.0",
+  "description": "Backend del correo de www.atlantidascs.com",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "keywords": [
+    "atlantida",
+    "sociedad",
+    "corretaje",
+    "seguros",
+    "seguridad",
+    "confianza",
+    "correos"
+  ],
+  "author": "Javier Valeriano",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "nodemailer": "^6.9.1",
+    "nodemailer-express-handlebars": "^6.1.0"
+  }
+}
