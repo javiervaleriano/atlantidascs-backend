@@ -9,7 +9,8 @@ class Server {
 
     this.whiteListCors = [
       'http://www.atlantidascs.com',
-      'https://www.atlantidascs.com'
+      'https://www.atlantidascs.com',
+      'http://atlantidascs.com'
     ];
 
     this.paths = {
