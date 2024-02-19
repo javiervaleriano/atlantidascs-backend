@@ -10,6 +10,7 @@ class Server {
     this.whiteListCors = [
       'http://www.atlantidascs.com',
       'https://www.atlantidascs.com',
+      'https://atlantidascs.com',
       'http://atlantidascs.com'
     ];
 
