@@ -46,7 +46,9 @@ const deliverEmail = async (req = request, res = response) => {
       template: 'contact',
       context: {
         name: `${body.nombre} ${body.apellido}`,
-        message: body['mensaje-de-contacto']
+        message: body['mensaje-de-contacto'],
+        email: body.correo,
+        phone: body.telefono
       }
     },
     responseUser = {
