@@ -8,10 +8,12 @@ class Server {
     this.port = process.env.PORT;
 
     this.whiteListCors = [
-      'http://www.atlantidascs.com',
-      'https://www.atlantidascs.com',
-      'https://atlantidascs.com',
-      'http://atlantidascs.com'
+      // 'http://www.atlantidascs.com',
+      // 'https://www.atlantidascs.com',
+      // 'https://atlantidascs.com',
+      // 'http://atlantidascs.com'
+      'https://atlantidascs-dev.netlify.app/',
+      'https://atlantidascs-dev.netlify.app',
     ];
 
     this.paths = {

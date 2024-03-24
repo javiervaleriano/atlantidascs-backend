@@ -4,24 +4,18 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mensaje del formulario de contacto</title>
+  <title>Interés en el curso de asesor de Seguros</title>
 
   <style>
     .contact-msg {
       white-space: pre-line;
     }
-
-    .txt-msg {
-      white-space: pre-wrap;
-      font-style: italic;
-      font-size: 14px;
-    }
   </style>
 </head>
 <body>
-  <h2 class="contact-title">Nuevo mensaje de {{name}}</h2>
-  <q class="contact-msg txt-msg">{{message}}</q>
+  <h2 class="contact-title">Nueva persona interesada en el entrenamiento de asesores de Seguros</h2>
+  <p class="contact-msg">Nombre y apellido: {{name}}</p>
   <p class="contact-msg">Correo de {{name}}: {{email}}</p>
-  <p class="contact-msg">Teléfono de {{name}}: {{phone}}</p>
+  <p class="contact-msg">Ciudad de {{name}}: {{city}}</p>
 </body>
 </html>
