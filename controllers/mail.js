@@ -5,7 +5,7 @@ const path = require('path');
 // CONFIG
 const { handlebarOptions } = require('../config/handlebar');
 // HELPERS
-const { destructureKeyValue } = require('../helpers/destructureKeyValue');
+const { formatKeyValue } = require('../helpers/formatKeyValue');
 
 const { NAME_FROM, SERVICE_EMAIL_FROM, SERVICE_GSECRET_KEY, CONTACT_EMAIL_FROM, CONTACT_GSECRET_KEY } = process.env;
 
@@ -18,9 +18,7 @@ const deliverEmail = async (req = request, res = response) => {
   const isContactForm = formType === 'contact',
     currEmailFrom = isContactForm ? CONTACT_EMAIL_FROM : SERVICE_EMAIL_FROM;
 
-  let [headersTable, cellsTable] = destructureKeyValue(body);
-
-  headersTable = headersTable.map((prop) => prop.replaceAll('-', ' ').toUpperCase());
+  let data = formatKeyValue(body);
 
   const nodemailerConfig = {
     host: 'smtp.gmail.com',
@@ -36,8 +34,7 @@ const deliverEmail = async (req = request, res = response) => {
     subject: `Nueva cotización de ${body['tipo-de-producto']} de ${body.nombre} ${body.apellido}`,
     template: 'quotation',
     context: {
-      headersTable,
-      cellsTable,
+      data,
     },
   },
     contactMsg = {
