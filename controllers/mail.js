@@ -6,17 +6,39 @@ const path = require('path');
 const { handlebarOptions } = require('../config/handlebar');
 // HELPERS
 const { formatKeyValue } = require('../helpers/formatKeyValue');
+const { getRegionByState, OCCIDENTE } = require('../helpers/region');
 
-const { NAME_FROM, SERVICE_EMAIL_FROM, SERVICE_GSECRET_KEY, CONTACT_EMAIL_FROM, CONTACT_GSECRET_KEY } = process.env;
+const {
+  NAME_FROM,
+  SERVICE_EMAIL_FROM_ORIENTE, SERVICE_GSECRET_KEY_ORIENTE,
+  SERVICE_EMAIL_FROM_OCCIDENTE, SERVICE_GSECRET_KEY_OCCIDENTE,
+  CONTACT_EMAIL_FROM, CONTACT_GSECRET_KEY,
+} = process.env;
 
 
 const deliverEmail = async (req = request, res = response) => {
 
-  const { formType, email: emailToSend } = req.params,
+  const { formType } = req.params,
     { body } = req;
 
-  const isContactForm = formType === 'contact',
-    currEmailFrom = isContactForm ? CONTACT_EMAIL_FROM : SERVICE_EMAIL_FROM;
+  const isContactForm = formType === 'contact';
+
+  // La región se deriva del estado enviado en el formulario (nunca de un dato
+  // que el cliente pudiera manipular directamente) para elegir la cuenta de
+  // Gmail correcta con la que se autentica y envía el correo de cotización.
+  const isOccidente = !isContactForm && getRegionByState(body.estado) === OCCIDENTE;
+
+  const currEmailFrom = isContactForm
+    ? CONTACT_EMAIL_FROM
+    : isOccidente
+      ? SERVICE_EMAIL_FROM_OCCIDENTE
+      : SERVICE_EMAIL_FROM_ORIENTE;
+
+  const currGsecretKey = isContactForm
+    ? CONTACT_GSECRET_KEY
+    : isOccidente
+      ? SERVICE_GSECRET_KEY_OCCIDENTE
+      : SERVICE_GSECRET_KEY_ORIENTE;
 
   let data = formatKeyValue(body);
 
@@ -26,11 +48,13 @@ const deliverEmail = async (req = request, res = response) => {
     secure: true,
     auth: {
       user: currEmailFrom,
-      pass: isContactForm ? CONTACT_GSECRET_KEY : SERVICE_GSECRET_KEY,
+      pass: currGsecretKey,
     }
   }, quotationMsg = {
     from: `"${NAME_FROM}" <${currEmailFrom}>`,
-    to: emailToSend,
+    // El destino se resuelve siempre en el backend (currEmailFrom), nunca a partir de
+    // un valor que llegue del cliente, para evitar que la ruta se use como relay abierto.
+    to: currEmailFrom,
     subject: `Nueva cotización de ${body['tipo-de-producto']} de ${body.nombre} ${body.apellido}`,
     template: 'quotation',
     context: {
