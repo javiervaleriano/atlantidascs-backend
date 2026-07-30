@@ -11,7 +11,8 @@ class Server {
       'http://www.atlantidascs.com',
       'https://www.atlantidascs.com',
       'https://atlantidascs.com',
-      'http://atlantidascs.com'
+      'http://atlantidascs.com',
+      'http://localhost:3000'
     ];
 
     this.paths = {

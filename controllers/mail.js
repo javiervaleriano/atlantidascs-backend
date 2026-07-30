@@ -22,6 +22,7 @@ const deliverEmail = async (req = request, res = response) => {
     { body } = req;
 
   const isContactForm = formType === 'contact';
+  const isSelfServiceForm = formType === 'selfservice';
 
   // La región se deriva del estado enviado en el formulario (nunca de un dato
   // que el cliente pudiera manipular directamente) para elegir la cuenta de
@@ -75,10 +76,18 @@ const deliverEmail = async (req = request, res = response) => {
     responseUser = {
       ...quotationMsg,
       to: body.correo,
-      subject: isContactForm ? `Hemos recibido su mensaje, ${body.nombre}` : `¡Gracias por preferirnos, ${body.nombre}!`,
+      subject: isContactForm
+        ? `Hemos recibido su mensaje, ${body.nombre}`
+        : isSelfServiceForm
+          ? `Redirigido a ${body['partner-name']} para cotizar, ${body.nombre}`
+          : `¡Gracias por preferirnos, ${body.nombre}!`,
       template: 'responseUser',
       context: {
-        message: isContactForm ? 'Muchas gracias por contactarnos.' : `Hemos recibido su solicitud de cotización de ${body['tipo-de-producto']}.`,
+        message: isContactForm
+          ? 'Muchas gracias por contactarnos.'
+          : isSelfServiceForm
+            ? `Hemos recibido tu información y has sido redirigido a ${body['partner-name']} para completar tu cotización de ${body['tipo-de-producto']} en línea.`
+            : `Hemos recibido su solicitud de cotización de ${body['tipo-de-producto']}.`,
       }
     };
 
@@ -87,9 +96,27 @@ const deliverEmail = async (req = request, res = response) => {
 
   transport.use('compile', hbs(handlebarOptions));
 
+  // Para autogestión se usa un mensaje y template específicos
+  const selfServiceMsg = isSelfServiceForm ? {
+    ...quotationMsg,
+    subject: `⚡ Autogestión: ${body.nombre} ${body.apellido} quiere cotizar ${body['tipo-de-producto']} con ${body['partner-name']}`,
+    template: 'selfservice',
+    context: {
+      data,
+      partnerName: body['partner-name'],
+      partnerUrl: body['partner-url'],
+    },
+  } : null;
+
   try {
     // Receive website form
-    await transport.sendMail(isContactForm ? contactMsg : quotationMsg);
+    await transport.sendMail(
+      isContactForm
+        ? contactMsg
+        : isSelfServiceForm
+          ? selfServiceMsg
+          : quotationMsg
+    );
 
     // Send automatic response to the user
     await transport.sendMail(responseUser);
